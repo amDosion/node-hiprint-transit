@@ -19,6 +19,13 @@ import log from './src/log.js';
 import { readConfig, getIPAddress } from './src/config.js';
 import packageJson from './package.json' assert { type: 'json' };
 
+// Filter printer list to only the default printer of each client when enabled
+function filterPrinters(printerList, defaultPrinterOnly) {
+  if (!defaultPrinterOnly || !Array.isArray(printerList)) return printerList;
+  const defaults = printerList.filter((p) => p && p.isDefault === true);
+  return defaults.length > 0 ? defaults : printerList;
+}
+
 // ES Module need use fileURLToPath to get __dirname
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -42,7 +49,7 @@ const CLIENT = new Map();
 
 // Read config first and then start serve
 readConfig().then((CONFIG) => {
-  const { port, token, useSSL, lang } = CONFIG;
+  const { port, token, useSSL, lang, defaultPrinterOnly } = CONFIG;
   var ipAddress = `http://${getIPAddress()}:${port}`;
   i18n.setLocale(lang);
   var server;
@@ -174,7 +181,7 @@ readConfig().then((CONFIG) => {
         const clients = CLIENT.get(sToken);
         Object.keys(clients).forEach((key) => {
           const client = clients[key];
-          client.printerList.forEach((printer) => {
+          filterPrinters(client.printerList, defaultPrinterOnly).forEach((printer) => {
             allPrinterList.push({
               ...printer,
               server: Object.assign({}, client, {
@@ -231,7 +238,7 @@ readConfig().then((CONFIG) => {
         const clients = CLIENT.get(sToken);
         Object.keys(clients).forEach((key) => {
           const client = clients[key];
-          client.printerList.forEach((printer) => {
+          filterPrinters(client.printerList, defaultPrinterOnly).forEach((printer) => {
             allPrinterList.push({
               ...printer,
               server: Object.assign({}, client, {

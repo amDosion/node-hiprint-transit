@@ -51,6 +51,8 @@ function readConfig() {
           CONFIG.lang = ['zh', 'en'].includes(_CONFIG.lang)
             ? _CONFIG.lang
             : 'en';
+          // Only expose the default printer of each electron-hiprint client when true
+          CONFIG.defaultPrinterOnly = Boolean(_CONFIG.defaultPrinterOnly) || false;
           resolve(CONFIG);
         } catch (error) {
           reject(error);
