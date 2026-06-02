@@ -8,6 +8,7 @@ import path from 'node:path';
 import http from 'node:http';
 import https from 'node:https';
 import { readFileSync } from 'node:fs';
+import { createRequire } from 'node:module';
 import { fileURLToPath } from 'node:url';
 import { totalmem, freemem } from 'node:os';
 import chalk from 'chalk';
@@ -17,7 +18,12 @@ import forge from 'node-forge';
 import { toUnicode } from 'punycode';
 import log from './src/log.js';
 import { readConfig, getIPAddress } from './src/config.js';
-import packageJson from './package.json' assert { type: 'json' };
+
+// ES Module need use fileURLToPath to get __dirname
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const require = createRequire(import.meta.url);
+const packageJson = require('./package.json');
 
 // Filter printer list to only the default printer of each client when enabled
 function filterPrinters(printerList, defaultPrinterOnly) {
@@ -26,10 +32,6 @@ function filterPrinters(printerList, defaultPrinterOnly) {
   return defaults.length > 0 ? defaults : printerList;
 }
 
-// ES Module need use fileURLToPath to get __dirname
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
 const printEvents = [
   'news',
   'printByFragments',
@@ -37,6 +39,29 @@ const printEvents = [
   'render-pdf',
   'render-print',
 ];
+const fileExportEvent = 'file.export.v1';
+const fileExportReplyEvents = [
+  'file.export.v1.progress',
+  'file.export.v1.success',
+  'file.export.v1.error',
+];
+const maxFileExportBytes = 50 * 1024 * 1024;
+
+function isFileExportEnabled(clientRecord) {
+  return clientRecord?.capabilities?.fileExport?.enabled === true;
+}
+
+function declaredExportSize(options) {
+  const size = Number(options?.size);
+  if (Number.isFinite(size) && size >= 0) return size;
+  if (typeof options?.data === 'string') {
+    return Math.ceil((options.data.length * 3) / 4);
+  }
+  if (typeof options?.payload === 'string') {
+    return Math.ceil((options.payload.length * 3) / 4);
+  }
+  return 0;
+}
 
 // Setup i18n
 const i18n = new I18n({
@@ -181,15 +206,17 @@ readConfig().then((CONFIG) => {
         const clients = CLIENT.get(sToken);
         Object.keys(clients).forEach((key) => {
           const client = clients[key];
-          filterPrinters(client.printerList, defaultPrinterOnly).forEach((printer) => {
-            allPrinterList.push({
-              ...printer,
-              server: Object.assign({}, client, {
-                clientId: key,
-                printerList: undefined,
-              }),
-            });
-          });
+          filterPrinters(client.printerList, defaultPrinterOnly).forEach(
+            (printer) => {
+              allPrinterList.push({
+                ...printer,
+                server: Object.assign({}, client, {
+                  clientId: key,
+                  printerList: undefined,
+                }),
+              });
+            },
+          );
         });
         socket.emit('printerList', allPrinterList);
       }
@@ -238,15 +265,17 @@ readConfig().then((CONFIG) => {
         const clients = CLIENT.get(sToken);
         Object.keys(clients).forEach((key) => {
           const client = clients[key];
-          filterPrinters(client.printerList, defaultPrinterOnly).forEach((printer) => {
-            allPrinterList.push({
-              ...printer,
-              server: Object.assign({}, client, {
-                clientId: key,
-                printerList: undefined,
-              }),
-            });
-          });
+          filterPrinters(client.printerList, defaultPrinterOnly).forEach(
+            (printer) => {
+              allPrinterList.push({
+                ...printer,
+                server: Object.assign({}, client, {
+                  clientId: key,
+                  printerList: undefined,
+                }),
+              });
+            },
+          );
         });
         socket.emit('printerList', allPrinterList);
       }, 1000 * 2);
@@ -369,6 +398,65 @@ readConfig().then((CONFIG) => {
               socket.id,
               event,
               options.templateId,
+            ),
+          );
+        }
+      });
+    });
+
+    socket.on(fileExportEvent, (options) => {
+      const taskId = options?.taskId;
+      if (!options?.client) {
+        socket.emit('file.export.v1.error', {
+          taskId,
+          code: 'CLIENT_REQUIRED',
+          message: 'Client must be specified.',
+        });
+        return;
+      }
+      const clientRecord = CLIENT.get(sToken)[options.client];
+      if (!clientRecord) {
+        socket.emit('file.export.v1.error', {
+          taskId,
+          code: 'CLIENT_NOT_FOUND',
+          message: 'Client is not exist.',
+        });
+        return;
+      }
+      if (!isFileExportEnabled(clientRecord)) {
+        socket.emit('file.export.v1.error', {
+          taskId,
+          code: 'CLIENT_FILE_EXPORT_DISABLED',
+          message: 'Client file export capability is disabled.',
+        });
+        return;
+      }
+      if (declaredExportSize(options) > maxFileExportBytes) {
+        socket.emit('file.export.v1.error', {
+          taskId,
+          code: 'FILE_TOO_LARGE',
+          message: 'File export task is too large.',
+        });
+        return;
+      }
+      socket
+        .to(options.client)
+        .emit(fileExportEvent, { ...options, replyId: socket.id });
+      log(
+        i18n.__(`%s send %s to %s`, socket.id, fileExportEvent, options.client),
+      );
+    });
+
+    fileExportReplyEvents.forEach((event) => {
+      socket.on(event, (options) => {
+        if (options?.replyId) {
+          socket.to(options.replyId).emit(event, options);
+          log(
+            i18n.__(
+              `%s client: %s result, taskId: %s`,
+              socket.id,
+              event,
+              options.taskId,
             ),
           );
         }
