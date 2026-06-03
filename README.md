@@ -4,7 +4,7 @@
 
 `node-hiprint-transit` 是一个基于 Node.js 的中转服务器，用于在 `electron-hiprint` 客户端和 `vue-plugin-hiprint` 库之间充当中转服务，实现这些组件之间的无缝连接和打印操作。
 
-[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/Xavier9896/node-hiprint-transit)
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/amDosion/node-hiprint-transit)
 
 ![node-hiprint-transit.png](./res/node-hiprint-transit.png)
 
@@ -45,7 +45,7 @@
 这个脚本将帮助你快速安装、初始化、运行 `node-hiprint-transit`。
 
 ```bash
-wget https://raw.githubusercontent.com/Xavier9896/node-hiprint-transit/main/install.sh
+wget https://raw.githubusercontent.com/amDosion/node-hiprint-transit/main/install.sh
 
 chmod +x install.sh
 
@@ -57,8 +57,14 @@ chmod +x install.sh
 ### 1. 克隆项目
 
 ```bash
-git clone https://github.com/Xavier9896/node-hiprint-transit.git
+git clone https://github.com/amDosion/node-hiprint-transit.git
 cd node-hiprint-transit
+```
+
+也可以直接使用 GHCR 镜像：
+
+```bash
+docker pull ghcr.io/amdosion/node-hiprint-transit:latest
 ```
 
 ### 2. 修改 `docker-compose.yml` 文件
@@ -78,7 +84,7 @@ docker-compose up -d
 
 ### 1. 下载打包文件
 
-[点击下载](https://gitee.com/Xavier9896/node-hiprint-transit/blob/main/out/transit-setup-0.0.6.exe)
+当前独立维护版本优先使用 Docker / GHCR 部署；Windows 打包产物以后续 GitHub Releases 为准。
 
 ### 2. 指定解压缩路径
 
@@ -365,9 +371,9 @@ hiwebSocket.socket.on('success', () => {
 
 | 项目名称                 | 项目地址                                                                                                                 | 下载地址                                                                | 描述                                                               |
 | ------------------------ | ------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------- | ------------------------------------------------------------------ |
-| vue-plugin-hiprint       | [github](https://github.com/CcSimple/vue-plugin-hiprint)、[gitee](https://gitee.com/CcSimple/vue-plugin-hiprint)         | [npm](https://www.npmjs.com/package/vue-plugin-hiprint)                 | 打印设计器                                                         |
-| electron-hiprint         | [github](https://github.com/CcSimple/electron-hiprint)、[gitee](https://gitee.com/CcSimple/electron-hiprint)             | [releases](https://github.com/CcSimple/electron-hiprint/releases)       | 直接打印客户端                                                     |
-| node-hiprint-transit     | [github](https://github.com/Xavier9896/node-hiprint-transit)、[gitee](https://gitee.com/Xavier9896/node-hiprint-transit) | [releases](https://github.com/Xavier9896/node-hiprint-transit/releases) | web 与客户端中转服务 Node 实现                                     |
+| vue-plugin-hiprint       | [github](https://github.com/amDosion/vue3-print)                                                                         | [npm](https://www.npmjs.com/package/vue-plugin-hiprint)                 | 打印设计器                                                         |
+| electron-hiprint         | [github](https://github.com/amDosion/electron-hiprint)                                                                   | [releases](https://github.com/amDosion/electron-hiprint/releases)       | 直接打印客户端                                                     |
+| node-hiprint-transit     | [github](https://github.com/amDosion/node-hiprint-transit)                                                               | [packages](https://github.com/amDosion/node-hiprint-transit/pkgs/container/node-hiprint-transit) | web 与客户端中转服务 Node 实现                                     |
 | hiprint-transporter-java | [github](https://github.com/LyingDoc/hiprint-transit-java)、[gitee](https://gitee.com/dut_cc/hiprint-transporter-java)   | -                                                                       | web 与客户端中转服务 Java 实现                                     |
 | hiprint-transit-java     | [github](https://github.com/weaponready/hiprint-transit-java)                                                            | -                                                                       | web 与客户端中转服务 Java 实现                                     |
 | uni-app-hiprint          | [github](https://github.com/Xavier9896/uni-app-hiprint)                                                                  | -                                                                       | uni-app 项目通过 webview 使用 vue-plugin-hiprint demo              |
