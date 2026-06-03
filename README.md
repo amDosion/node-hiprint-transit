@@ -54,6 +54,21 @@ chmod +x install.sh
 
 ## 🐳 使用 Docker 启动项目
 
+### 自动镜像发布
+
+本仓库使用 GitHub Actions 自动构建 GHCR 镜像：
+
+- 推送到 `main` / `master`：构建并推送 `ghcr.io/amdosion/node-hiprint-transit:latest`，同时生成分支 tag 和短 SHA tag。
+- 推送到 `codex/**`：构建并推送对应开发分支 tag，便于 Unraid 或测试环境提前验证。
+- 推送 `v*` tag：构建并推送语义化版本 tag。
+- Pull Request：只构建校验，不推送镜像。
+
+Unraid 生产环境应使用 GitHub 发布的镜像，而不是在 Unraid 本机重新构建：
+
+```bash
+docker pull ghcr.io/amdosion/node-hiprint-transit:latest
+```
+
 ### 1. 克隆项目
 
 ```bash
