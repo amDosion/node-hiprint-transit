@@ -10,6 +10,13 @@ import inquirer from 'inquirer';
 import { fileURLToPath } from 'node:url';
 import { writeConfig } from './src/config.js';
 import { I18n } from 'i18n';
+import {
+  DEFAULT_INIT_CONFIG,
+  parsePortAnswer,
+  parseTokenAnswer,
+  validatePortInput,
+  validateTokenInput,
+} from './src/init-config.js';
 
 // ES Module need use fileURLToPath to get __dirname
 const __filename = fileURLToPath(import.meta.url);
@@ -21,13 +28,7 @@ const rl = readline.createInterface({
   output: process.stdout,
 });
 
-// Default config
-const CONFIG = {
-  port: 17521, // port
-  token: 'vue-plugin-hiprint', // TOKEN
-  useSSL: false, // SSL on/off
-  lang: 'en', // language
-};
+const CONFIG = { ...DEFAULT_INIT_CONFIG };
 
 // Setup i18n
 const i18n = new I18n({
@@ -81,24 +82,11 @@ function setPort() {
           type: 'input',
           message: i18n.__('Set serve port %s:', '10000~65535'),
           default: 17521,
-          validate: (input) => {
-            if (
-              input &&
-              /^\d+$/.test(input) &&
-              input >= 10000 &&
-              input <= 65535
-            ) {
-              return true;
-            } else if (!input) {
-              return true;
-            } else {
-              return i18n.__('Port must be set between %s', '10000 and 65535');
-            }
-          },
+          validate: (input) => validatePortInput(input, i18n),
         },
       ])
       .then((answers) => {
-        CONFIG.port = answers.port * 1;
+        CONFIG.port = parsePortAnswer(answers.port);
         resolve();
       });
   });
@@ -119,21 +107,11 @@ function setToken() {
             'Set service TOKEN (Use the wildcard character (*) to match any character):',
           ),
           default: 'vue-plugin-hiprint',
-          validate: (input) => {
-            if (input && input.length >= 6) {
-              return true;
-            } else if (!input) {
-              return true;
-            } else {
-              return i18n.__(
-                'For security reasons, the TOKEN length must be greater than 5',
-              );
-            }
-          },
+          validate: (input) => validateTokenInput(input, i18n),
         },
       ])
       .then((answers) => {
-        CONFIG.token = answers.token;
+        CONFIG.token = parseTokenAnswer(answers.token);
         resolve();
       });
   });

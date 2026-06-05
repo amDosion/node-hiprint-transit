@@ -10,6 +10,8 @@ by command evidence.
 - Require `ALLOW_DESTRUCTIVE=1` before destructive filesystem, Git, deployment,
   or production operations.
 - Use `npm run verify` as the default local completion gate.
+- Use `bash ./scripts/run-all.sh` as the full local gate, including Docker smoke
+  unless `SKIP_DOCKER=1` is explicitly set.
 - Update `docs/runbook/STATUS.md` after each substantial iteration.
 
 ## Iteration 1 - Workflow and Dependency Modernization

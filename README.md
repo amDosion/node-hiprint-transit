@@ -87,9 +87,13 @@ docker pull ghcr.io/amdosion/node-hiprint-transit:latest
 ```bash
 npm ci
 npm run verify
+npm run check:docker
+bash ./scripts/run-all.sh
 ```
 
 `npm run verify` 会执行依赖审计、单元测试、Codex 工作流文件检查、Prettier 检查、构建和语法检查。
+`npm run check:docker` 会执行本地 Docker 镜像构建 smoke；Windows 未安装 Docker Desktop 时，脚本会尝试通过 WSL 执行。
+`bash ./scripts/run-all.sh` 会同时执行 `npm run verify` 和 Docker smoke。
 
 ### 2. 修改 `docker-compose.yml` 文件
 

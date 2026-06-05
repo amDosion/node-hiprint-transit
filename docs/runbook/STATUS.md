@@ -62,5 +62,33 @@ Verification completed:
 
 Residual risks:
 
-- Local Docker smoke remains covered by GitHub Actions because Docker CLI is not
-  installed on this machine.
+- Superseded by the local Docker setup and smoke-test evidence below.
+
+## 2026-06-06 - Local Docker and remaining test coverage
+
+Owner: ops
+
+Objective: make Docker smoke testable locally and close the remaining automated
+coverage gaps called out after modernization.
+
+Fixes:
+
+- Installed Docker Engine/CLI in WSL Ubuntu and enabled the Docker daemon.
+- Installed Docker buildx and verified `docker buildx build --load`.
+- Added `scripts/docker-smoke.sh` plus a cross-platform Node wrapper so
+  `npm run check:docker` can run directly on Linux/CI and can route Windows
+  workspaces through WSL when Windows-side Docker is absent.
+- Added initialization config helper tests so `npm run init` validation/default
+  behavior is covered without requiring a manual interactive terminal.
+- Added Docker smoke script metadata tests so the local Docker gate cannot
+  disappear silently.
+
+Verification completed:
+
+- `npm test`
+- `npm run verify`
+- `npm run check:docker`
+- `bash ./scripts/run-all.sh`
+- WSL root Docker Engine 29.1.3 active with overlayfs storage.
+- Docker buildx 0.30.1 installed and verified with `docker buildx build --load`.
+- GitHub Actions still need to run on `main` after this iteration is pushed.

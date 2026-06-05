@@ -1,5 +1,6 @@
 # 从源码用 rollup 构建 dist，再用同一 Node 24 LTS 运行自包含 ESM bundle
 FROM node:24 AS build
+ENV NPM_CONFIG_UPDATE_NOTIFIER=false
 WORKDIR /app
 COPY package*.json ./
 RUN npm ci --no-audit --no-fund
