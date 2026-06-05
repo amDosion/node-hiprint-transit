@@ -27,10 +27,13 @@ Verification completed:
 - `bash ./scripts/run-all.sh` passed locally.
 - Local Docker smoke could not run because Docker CLI is not installed on this
   machine.
+- GitHub Actions passed on `main`:
+  - CI: https://github.com/amDosion/node-hiprint-transit/actions/runs/27026712598
+  - GHCR build/push:
+    https://github.com/amDosion/node-hiprint-transit/actions/runs/27026712612
 
 Residual risks:
 
 - `inquirer` was upgraded across major versions; the interactive `npm run init`
   path needs syntax/build coverage and can be manually smoke-tested in a real
   terminal if prompt behavior changes.
-- GitHub Actions still need to run on `main` after this iteration is pushed.
