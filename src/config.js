@@ -17,13 +17,42 @@ const configPath = process.env.HIPRINT_CONFIG_PATH
   ? path.resolve(process.env.HIPRINT_CONFIG_PATH)
   : path.join(__dirname, '../', 'config.json');
 
-// Default config
-const CONFIG = {
-  port: '17521',
+const DEFAULT_CONFIG = {
+  port: 17521,
   token: 'vue-plugin-hiprint',
   useSSL: false,
   lang: 'en',
+  defaultPrinterOnly: false,
 };
+
+const CONFIG = { ...DEFAULT_CONFIG };
+
+function normalizePort(port) {
+  const parsed = Number(port);
+  if (Number.isInteger(parsed) && parsed >= 10000 && parsed <= 65535) {
+    return parsed;
+  }
+  return DEFAULT_CONFIG.port;
+}
+
+function normalizeToken(token) {
+  if (typeof token === 'string' && token.length >= 6) {
+    return token;
+  }
+  return DEFAULT_CONFIG.token;
+}
+
+export function normalizeConfig(config = {}) {
+  return {
+    port: normalizePort(config.port ?? DEFAULT_CONFIG.port),
+    token: normalizeToken(config.token ?? DEFAULT_CONFIG.token),
+    useSSL: Boolean(config.useSSL),
+    lang: ['zh', 'en'].includes(config.lang)
+      ? config.lang
+      : DEFAULT_CONFIG.lang,
+    defaultPrinterOnly: Boolean(config.defaultPrinterOnly),
+  };
+}
 
 /**
  * @description: Read config from config.json
@@ -34,27 +63,12 @@ export function readConfig() {
     readFile(configPath, 'utf-8', (err, data) => {
       if (err) {
         reject(err);
-      } else if (data) {
+      } else {
         try {
-          var _CONFIG = Object.assign({}, CONFIG, JSON.parse(data));
-          // Check config
-          // Check port need between 10000 and 65535
-          if (_CONFIG.port < 10000 || _CONFIG.port > 65535)
-            _CONFIG.port = '17521';
-          CONFIG.port = _CONFIG.port;
-          // Check token need more than 6 characters, and can't be empty
-          if (_CONFIG.token && _CONFIG.token.length < 6) {
-            _CONFIG.token = 'vue-plugin-hiprint';
-          }
-          CONFIG.token = _CONFIG.token;
-          CONFIG.useSSL = _CONFIG.useSSL || false;
-          // Check lang need in ["zh", "en"]
-          CONFIG.lang = ['zh', 'en'].includes(_CONFIG.lang)
-            ? _CONFIG.lang
-            : 'en';
-          // Only expose the default printer of each electron-hiprint client when true
-          CONFIG.defaultPrinterOnly =
-            Boolean(_CONFIG.defaultPrinterOnly) || false;
+          Object.assign(
+            CONFIG,
+            normalizeConfig(data ? JSON.parse(data) : DEFAULT_CONFIG),
+          );
           resolve(CONFIG);
         } catch (error) {
           reject(error);
@@ -70,18 +84,9 @@ export function readConfig() {
  * @return {Promise}
  */
 export function writeConfig(_CONFIG) {
-  // Check config
-  // Check port need between 10000 and 65535
-  if (_CONFIG.port < 10000 || _CONFIG.port > 65535) _CONFIG.port = '17521';
-  // Check token need more than 6 characters, and can't be empty
-  if ((_CONFIG.token || '').length < 6) {
-    _CONFIG.token = 'vue-plugin-hiprint';
-  }
-  _CONFIG.useSSL = Boolean(_CONFIG.useSSL) || false;
-  // Check lang need in ["zh", "en"]
-  _CONFIG.lang = ['zh', 'en'].includes(_CONFIG.lang) ? _CONFIG.lang : 'en';
+  const normalizedConfig = normalizeConfig(_CONFIG);
   return new Promise((resolve, reject) => {
-    writeFile(configPath, JSON.stringify(_CONFIG, null, 2), (err) => {
+    writeFile(configPath, JSON.stringify(normalizedConfig, null, 2), (err) => {
       if (err) {
         reject(err);
       } else {
@@ -109,5 +114,6 @@ export function getIPAddress() {
 export default {
   readConfig,
   writeConfig,
+  normalizeConfig,
   getIPAddress,
 };

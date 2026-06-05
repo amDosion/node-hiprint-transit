@@ -7,6 +7,13 @@ export const FILE_EXPORT_ERRORS = Object.freeze({
   INVALID_PAYLOAD: 'INVALID_PAYLOAD',
 });
 
+export function filterPrinters(printerList, defaultPrinterOnly) {
+  if (!Array.isArray(printerList)) return [];
+  if (!defaultPrinterOnly) return printerList;
+  const defaults = printerList.filter((printer) => printer?.isDefault === true);
+  return defaults.length > 0 ? defaults : printerList;
+}
+
 function escapeRegExp(value) {
   return value.replace(/[\\^$.*+?()[\]{}|]/g, '\\$&');
 }

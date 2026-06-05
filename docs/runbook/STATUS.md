@@ -37,3 +37,30 @@ Residual risks:
 - `inquirer` was upgraded across major versions; the interactive `npm run init`
   path needs syntax/build coverage and can be manually smoke-tested in a real
   terminal if prompt behavior changes.
+
+## 2026-06-06 - Runtime boundary follow-up
+
+Owner: ops
+
+Objective: close code-level review findings found after dependency/workflow
+modernization.
+
+Fixes:
+
+- Added `normalizeConfig` so empty tokens, invalid ports, invalid locales, and
+  empty config content fall back deterministically.
+- Moved printer filtering into a tested protocol helper and made missing printer
+  lists return `[]` instead of allowing callers to crash on `.forEach`.
+
+Verification completed:
+
+- `node --test test/config.test.js` failed before `normalizeConfig` existed and
+  passed after the fix.
+- `node --test test/protocol.test.js` failed before `filterPrinters` was
+  exported and passed after the fix.
+- `npm run verify` passed locally.
+
+Residual risks:
+
+- Local Docker smoke remains covered by GitHub Actions because Docker CLI is not
+  installed on this machine.

@@ -18,20 +18,17 @@ import forge from 'node-forge';
 import { toUnicode } from 'punycode';
 import log from './src/log.js';
 import { readConfig, getIPAddress } from './src/config.js';
-import { tokenMatches, validateFileExportTask } from './src/protocol.js';
+import {
+  filterPrinters,
+  tokenMatches,
+  validateFileExportTask,
+} from './src/protocol.js';
 
 // ES Module need use fileURLToPath to get __dirname
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const require = createRequire(import.meta.url);
 const packageJson = require('./package.json');
-
-// Filter printer list to only the default printer of each client when enabled
-function filterPrinters(printerList, defaultPrinterOnly) {
-  if (!defaultPrinterOnly || !Array.isArray(printerList)) return printerList;
-  const defaults = printerList.filter((p) => p && p.isDefault === true);
-  return defaults.length > 0 ? defaults : printerList;
-}
 
 const printEvents = [
   'news',

@@ -3,9 +3,33 @@ import { describe, it } from 'node:test';
 import {
   FILE_EXPORT_ERRORS,
   MAX_FILE_EXPORT_BYTES,
+  filterPrinters,
   tokenMatches,
   validateFileExportTask,
 } from '../src/protocol.js';
+
+describe('filterPrinters', () => {
+  it('returns an empty list for missing printer lists', () => {
+    assert.deepEqual(filterPrinters(undefined, false), []);
+    assert.deepEqual(filterPrinters(null, true), []);
+  });
+
+  it('keeps only default printers when requested and available', () => {
+    const printers = [
+      { name: 'A', isDefault: false },
+      { name: 'B', isDefault: true },
+    ];
+    assert.deepEqual(filterPrinters(printers, false), printers);
+    assert.deepEqual(filterPrinters(printers, true), [
+      { name: 'B', isDefault: true },
+    ]);
+  });
+
+  it('falls back to the full list when no default printer is marked', () => {
+    const printers = [{ name: 'A' }];
+    assert.deepEqual(filterPrinters(printers, true), printers);
+  });
+});
 
 describe('tokenMatches', () => {
   it('matches exact tokens and preserves wildcard semantics', () => {
