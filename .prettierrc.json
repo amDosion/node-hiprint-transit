@@ -10,5 +10,5 @@
   "bracketSameLine": false,
   "quoteProps": "as-needed",
   "arrowParens": "always",
-  "endOfLine": "crlf"
+  "endOfLine": "lf"
 }

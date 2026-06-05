@@ -1,5 +1,5 @@
-# Auto detect text files and perform LF normalization
-* text=auto
+# Auto detect text files and keep repository text cross-platform LF.
+* text=auto eol=lf
 *.gitattributes text eol=lf
 *.sh text eol=lf
 Dockerfile text eol=lf
