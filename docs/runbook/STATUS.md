@@ -91,4 +91,7 @@ Verification completed:
 - `bash ./scripts/run-all.sh`
 - WSL root Docker Engine 29.1.3 active with overlayfs storage.
 - Docker buildx 0.30.1 installed and verified with `docker buildx build --load`.
-- GitHub Actions still need to run on `main` after this iteration is pushed.
+- GitHub Actions passed on `main`:
+  - CI: https://github.com/amDosion/node-hiprint-transit/actions/runs/27027616217
+  - GHCR build/push:
+    https://github.com/amDosion/node-hiprint-transit/actions/runs/27027616218
