@@ -82,6 +82,15 @@ cd node-hiprint-transit
 docker pull ghcr.io/amdosion/node-hiprint-transit:latest
 ```
 
+开发和 CI 验证：
+
+```bash
+npm ci
+npm run verify
+```
+
+`npm run verify` 会执行依赖审计、单元测试、Codex 工作流文件检查、Prettier 检查、构建和语法检查。
+
 ### 2. 修改 `docker-compose.yml` 文件
 
 修改文件中 `/var/hiprint/config.json` 和 `/var/hiprint/logs` 挂载到正确的 `config.json` 设置文件和 `logs` 日志存储文件夹路径。

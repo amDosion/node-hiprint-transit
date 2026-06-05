@@ -7,8 +7,41 @@
 import commonjs from '@rollup/plugin-commonjs';
 import resolve from '@rollup/plugin-node-resolve';
 import json from '@rollup/plugin-json';
-import copy from 'rollup-plugin-copy';
 import del from 'rollup-plugin-delete';
+import fs from 'node:fs';
+import path from 'node:path';
+
+function copyFileTarget(src, dest, transform) {
+  fs.mkdirSync(dest, { recursive: true });
+  const output = path.join(dest, path.basename(src));
+  const contents = fs.readFileSync(src);
+  fs.writeFileSync(output, transform ? transform(contents) : contents);
+}
+
+function copyDirectoryTarget(src, dest) {
+  const output = path.join(dest, path.basename(src));
+  fs.rmSync(output, { recursive: true, force: true });
+  fs.mkdirSync(dest, { recursive: true });
+  fs.cpSync(src, output, { recursive: true });
+}
+
+function copyBuildAssets({ targets }) {
+  return {
+    name: 'copy-build-assets',
+    writeBundle() {
+      for (const target of targets) {
+        const src = path.resolve(target.src);
+        const dest = path.resolve(target.dest);
+        const stats = fs.statSync(src);
+        if (stats.isDirectory()) {
+          copyDirectoryTarget(src, dest);
+        } else {
+          copyFileTarget(src, dest, target.transform);
+        }
+      }
+    },
+  };
+}
 
 export default {
   input: {
@@ -42,7 +75,7 @@ export default {
       preferBuiltins: true,
     }),
     json(),
-    copy({
+    copyBuildAssets({
       targets: [
         {
           src: 'src/locales',

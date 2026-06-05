@@ -27,13 +27,10 @@ jobs:
           node-version: '24'
 
       - name: Install dependencies
-        run: npm install --no-audit --no-fund
+        run: npm ci --no-audit --no-fund
 
-      - name: Run tests
-        run: npm test
-
-      - name: Build package
-        run: npm run build
+      - name: Verify package
+        run: npm run verify
 
       - name: Build Docker image
         run: docker build -t node-hiprint-transit:ci .

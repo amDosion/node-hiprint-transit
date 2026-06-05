@@ -2,7 +2,7 @@
 FROM node:24 AS build
 WORKDIR /app
 COPY package*.json ./
-RUN npm install
+RUN npm ci --no-audit --no-fund
 COPY . .
 RUN npx rollup -c
 

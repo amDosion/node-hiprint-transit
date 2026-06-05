@@ -14,7 +14,9 @@ const __dirname = path.dirname(__filename);
 const rootDir = path.resolve(__dirname, '..');
 
 // 读取 package.json
-const packageJson = JSON.parse(fs.readFileSync(path.join(rootDir, 'package.json'), 'utf8'));
+const packageJson = JSON.parse(
+  fs.readFileSync(path.join(rootDir, 'package.json'), 'utf8'),
+);
 const version = packageJson.version;
 
 /**
@@ -47,11 +49,7 @@ async function createExe() {
     // 使用 7z 压缩
     const sevenZipPath = path.join(rootDir, 'bin', '7za.exe');
     const sfxPath = path.join(rootDir, 'bin', '7z.sfx');
-    const outputExe = path.join(
-      rootDir,
-      'out',
-      `transit-setup-${version}.exe`,
-    );
+    const outputExe = path.join(rootDir, 'out', `transit-setup-${version}.exe`);
 
     // 直接生成自解压文件
     const Command = `"${sevenZipPath}" a -sfx"${sfxPath}" "${outputExe}" "${tempDir}\\*"`;

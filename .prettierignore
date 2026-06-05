@@ -1,0 +1,6 @@
+.omx/
+node_modules/
+dist/
+out/
+logs/
+*.log
