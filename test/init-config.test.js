@@ -1,4 +1,6 @@
 import assert from 'node:assert/strict';
+import { readFile } from 'node:fs/promises';
+import path from 'node:path';
 import { describe, it } from 'node:test';
 import {
   buildInitConfig,
@@ -10,6 +12,8 @@ import {
   validateTokenInput,
 } from '../src/init-config.js';
 
+const rootDir = path.resolve(import.meta.dirname, '..');
+
 const fakeI18n = {
   __(message, replacement) {
     if (replacement) return message.replace('%s', replacement);
@@ -18,6 +22,12 @@ const fakeI18n = {
 };
 
 describe('init config helpers', () => {
+  it('uses prompt types supported by the current inquirer major', async () => {
+    const initScript = await readFile(path.join(rootDir, 'init.js'), 'utf8');
+    assert.doesNotMatch(initScript, /type:\s*'list'/);
+    assert.match(initScript, /type:\s*'select'/);
+  });
+
   it('validates port input before writing config', () => {
     assert.equal(isValidPortInput(''), true);
     assert.equal(isValidPortInput('17521'), true);

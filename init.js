@@ -47,7 +47,7 @@ function setLang() {
       .prompt([
         {
           name: 'lang',
-          type: 'list',
+          type: 'select',
           message: 'Set language 设置语言 ',
           choices: [
             {
@@ -139,21 +139,34 @@ function setSSL() {
   });
 }
 
-setLang().then(() => {
-  setPort().then(() => {
-    setToken().then(() => {
-      setSSL().then(() => {
-        writeConfig(CONFIG)
-          .then(() => {
-            console.log(i18n.__('Configuration file written successfully'));
-          })
-          .catch(() => {
-            console.error(i18n.__('Configuration file write failed'));
-          })
-          .finally(() => {
-            rl.close();
-          });
-      });
+function writeConfigAndClose(config) {
+  return writeConfig(config)
+    .then(() => {
+      console.log(i18n.__('Configuration file written successfully'));
+    })
+    .catch((error) => {
+      console.error(i18n.__('Configuration file write failed'));
+      throw error;
+    })
+    .finally(() => {
+      rl.close();
     });
-  });
+}
+
+async function main() {
+  if (process.argv.includes('--defaults') || !process.stdin.isTTY) {
+    await writeConfigAndClose(DEFAULT_INIT_CONFIG);
+    return;
+  }
+
+  await setLang();
+  await setPort();
+  await setToken();
+  await setSSL();
+  await writeConfigAndClose(CONFIG);
+}
+
+main().catch(() => {
+  rl.close();
+  process.exit(1);
 });

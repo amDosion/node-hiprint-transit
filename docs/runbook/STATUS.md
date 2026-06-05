@@ -80,6 +80,8 @@ Fixes:
   workspaces through WSL when Windows-side Docker is absent.
 - Added initialization config helper tests so `npm run init` validation/default
   behavior is covered without requiring a manual interactive terminal.
+- Added non-interactive init defaults mode and child-process tests so `node
+init.js` can be smoke-tested without a TTY.
 - Added Docker smoke script metadata tests so the local Docker gate cannot
   disappear silently.
 
@@ -89,9 +91,9 @@ Verification completed:
 - `npm run verify`
 - `npm run check:docker`
 - `bash ./scripts/run-all.sh`
+- Non-interactive `node init.js` smoke with a temporary `HIPRINT_CONFIG_PATH`
+  wrote the default config successfully.
 - WSL root Docker Engine 29.1.3 active with overlayfs storage.
 - Docker buildx 0.30.1 installed and verified with `docker buildx build --load`.
-- GitHub Actions passed on `main`:
-  - CI: https://github.com/amDosion/node-hiprint-transit/actions/runs/27027616217
-  - GHCR build/push:
-    https://github.com/amDosion/node-hiprint-transit/actions/runs/27027616218
+- GitHub Actions are verified after pushing the final commit; record the run
+  URLs in the handoff/final response to avoid status-only commit loops.
