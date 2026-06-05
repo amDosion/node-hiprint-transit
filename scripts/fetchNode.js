@@ -8,7 +8,7 @@ import chalk from 'chalk';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const NODE_VERSION = 'v16.20.2';
+const NODE_VERSION = 'v24.16.0';
 const PLATFORM = 'win-x64';
 const MIRROR_URL = `https://cdn.npmmirror.com/binaries/node/${NODE_VERSION}/${PLATFORM}/node.exe`;
 const OUTPUT_DIR = path.join(__dirname, '..', 'out');
@@ -27,10 +27,13 @@ console.log(chalk.yellow(`🔗 下载地址: ${MIRROR_URL}`));
 
 // 创建进度条
 const progressBar = new cliProgress.SingleBar({
-  format: '下载进度 |' + chalk.cyan('{bar}') + '| {percentage}% || {value}/{total} 字节',
+  format:
+    '下载进度 |' +
+    chalk.cyan('{bar}') +
+    '| {percentage}% || {value}/{total} 字节',
   barCompleteChar: '\u2588',
   barIncompleteChar: '\u2591',
-  hideCursor: true
+  hideCursor: true,
 });
 
 https
@@ -46,7 +49,7 @@ https
     progressBar.start(totalSize, 0);
 
     const file = fs.createWriteStream(outputPath);
-    
+
     response.on('data', (chunk) => {
       downloadedSize += chunk.length;
       progressBar.update(downloadedSize);

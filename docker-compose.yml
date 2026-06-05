@@ -2,10 +2,10 @@ version: '3.8'
 
 services:
   node-hiprint-transit:
-    container_name: "node-hiprint-transit"
+    container_name: 'node-hiprint-transit'
     build: .
     ports:
-      - "17521:17521"
+      - '17521:17521'
     volumes:
       - /var/hiprint/config.json:/node-hiprint-transit/config.json
       - /var/hiprint/logs:/node-hiprint-transit/logs
@@ -15,3 +15,5 @@ services:
     environment:
       TZ: Asia/Shanghai
       NODE_ENV: production
+      HIPRINT_CONFIG_PATH: /node-hiprint-transit/config.json
+      HIPRINT_LOG_DIR: /node-hiprint-transit/logs

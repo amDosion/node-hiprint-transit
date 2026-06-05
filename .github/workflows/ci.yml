@@ -5,7 +5,7 @@ env:
 
 on:
   push:
-    branches: [main, master, "codex/**"]
+    branches: [main, master, 'codex/**']
   pull_request:
     branches: [main, master]
   workflow_dispatch:
@@ -24,10 +24,13 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v5
         with:
-          node-version: "20"
+          node-version: '24'
 
       - name: Install dependencies
         run: npm install --no-audit --no-fund
+
+      - name: Run tests
+        run: npm test
 
       - name: Build package
         run: npm run build

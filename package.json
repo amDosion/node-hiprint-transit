@@ -7,6 +7,7 @@
   "scripts": {
     "init": "npm install && node ./src/init.js",
     "serve": "node ./index.js",
+    "test": "node --test",
     "build": "rollup -c && node ./scripts/fetchNode.js",
     "lint:prettier": "prettier --write \"**/*.{js,json}\"",
     "package": "node ./scripts/createExe.js"
@@ -46,6 +47,6 @@
     "rollup-plugin-delete": "^2.0.0"
   },
   "engines": {
-    "node": "<=16.20.2 || >= 16.0.0"
+    "node": ">=24"
   }
 }

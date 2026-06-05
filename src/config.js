@@ -13,7 +13,9 @@ import { fileURLToPath } from 'node:url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const configPath = path.join(__dirname, '../', 'config.json');
+const configPath = process.env.HIPRINT_CONFIG_PATH
+  ? path.resolve(process.env.HIPRINT_CONFIG_PATH)
+  : path.join(__dirname, '../', 'config.json');
 
 // Default config
 const CONFIG = {
@@ -51,7 +53,8 @@ export function readConfig() {
             ? _CONFIG.lang
             : 'en';
           // Only expose the default printer of each electron-hiprint client when true
-          CONFIG.defaultPrinterOnly = Boolean(_CONFIG.defaultPrinterOnly) || false;
+          CONFIG.defaultPrinterOnly =
+            Boolean(_CONFIG.defaultPrinterOnly) || false;
           resolve(CONFIG);
         } catch (error) {
           reject(error);

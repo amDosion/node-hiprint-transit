@@ -18,6 +18,7 @@ import forge from 'node-forge';
 import { toUnicode } from 'punycode';
 import log from './src/log.js';
 import { readConfig, getIPAddress } from './src/config.js';
+import { tokenMatches, validateFileExportTask } from './src/protocol.js';
 
 // ES Module need use fileURLToPath to get __dirname
 const __filename = fileURLToPath(import.meta.url);
@@ -45,22 +46,9 @@ const fileExportReplyEvents = [
   'file.export.v1.success',
   'file.export.v1.error',
 ];
-const maxFileExportBytes = 50 * 1024 * 1024;
 
 function isFileExportEnabled(clientRecord) {
   return clientRecord?.capabilities?.fileExport?.enabled === true;
-}
-
-function declaredExportSize(options) {
-  const size = Number(options?.size);
-  if (Number.isFinite(size) && size >= 0) return size;
-  if (typeof options?.data === 'string') {
-    return Math.ceil((options.data.length * 3) / 4);
-  }
-  if (typeof options?.payload === 'string') {
-    return Math.ceil((options.payload.length * 3) / 4);
-  }
-  return 0;
 }
 
 // Setup i18n
@@ -128,8 +116,7 @@ readConfig().then((CONFIG) => {
 
   // Authentication
   io.use((socket, next) => {
-    const tokenRegex = new RegExp(`^${token.replace(/\*/g, '\\S+')}$`);
-    if (token && tokenRegex.test(socket.handshake.auth.token)) {
+    if (tokenMatches(token, socket.handshake.auth?.token)) {
       next();
     } else {
       log(i18n.__('Authentication failed for %s', socket.id));
@@ -431,11 +418,12 @@ readConfig().then((CONFIG) => {
         });
         return;
       }
-      if (declaredExportSize(options) > maxFileExportBytes) {
+      const exportValidation = validateFileExportTask(options);
+      if (!exportValidation.ok) {
         socket.emit('file.export.v1.error', {
           taskId,
-          code: 'FILE_TOO_LARGE',
-          message: 'File export task is too large.',
+          code: exportValidation.code,
+          message: exportValidation.message,
         });
         return;
       }
