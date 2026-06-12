@@ -63,17 +63,13 @@ chmod +x install.sh
 - 推送 `v*` tag：构建并推送原始 tag 和去掉 `v` 前缀的语义化版本 tag。
 - Merge Request：只构建校验，不推送镜像。
 
-Unraid 生产环境应使用 GitLab 发布的镜像，而不是在 Unraid 本机重新构建。启用 GitLab Registry 后可直接拉取：
+Unraid 生产环境应使用 GitLab 发布的镜像，而不是在 Unraid 本机重新构建。`main` / `master` / `codex/**` / `v*` pipeline 会把镜像推送到 GitLab Container Registry；如果 Registry 未启用，发布 job 会失败。
 
 ```bash
 docker pull 192.168.50.97:5050/root/node-hiprint-transit:latest
 ```
 
-如果文明 GitLab Registry 尚未启用，CI 仍会生成 `node-hiprint-transit.tar` 作为 job artifact，可下载后导入：
-
-```bash
-docker load -i node-hiprint-transit.tar
-```
+Merge Request pipeline 只构建校验镜像，不推送 Registry。
 
 ### 1. 克隆项目
 
