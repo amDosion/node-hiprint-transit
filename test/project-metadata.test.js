@@ -44,7 +44,12 @@ describe('project metadata', () => {
   it('keeps Docker smoke wired into local and CI gates', async () => {
     const runAll = await readText('scripts/run-all.sh');
     const ci = await readText('.github/workflows/ci.yml');
+    const gitlabCi = await readText('.gitlab-ci.yml');
     assert.match(runAll, /npm run check:docker/);
     assert.match(ci, /npm run check:docker/);
+    assert.match(gitlabCi, /npm run verify/);
+    assert.match(gitlabCi, /docker build/);
+    assert.match(gitlabCi, /docker save/);
+    assert.match(gitlabCi, /CI_REGISTRY_IMAGE/);
   });
 });

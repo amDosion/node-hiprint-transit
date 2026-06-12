@@ -21,7 +21,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/amDosion/node-hiprint-transit.git"
+    "url": "http://192.168.50.97/root/node-hiprint-transit.git"
   },
   "keywords": [
     "hiprint",
@@ -31,9 +31,9 @@
   "author": "xavier",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/amDosion/node-hiprint-transit/issues"
+    "url": "http://192.168.50.97/root/node-hiprint-transit/-/issues"
   },
-  "homepage": "https://github.com/amDosion/node-hiprint-transit#readme",
+  "homepage": "http://192.168.50.97/root/node-hiprint-transit#readme",
   "dependencies": {
     "chalk": "^5.6.2",
     "cli-progress": "^3.12.0",
