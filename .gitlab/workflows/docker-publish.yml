@@ -104,7 +104,7 @@ docker_publish:
           --frontend dockerfile.v0 \
           --local context=. \
           --local dockerfile=. \
-          --output type=image,name="$registry_names",push=true; then
+          --output type=image,name="$registry_names",push=true,registry.insecure=true; then
           for tag in $registry_tags; do
             echo "$tag"
           done >> image/image-tags.txt
