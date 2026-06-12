@@ -45,7 +45,7 @@
 这个脚本将帮助你快速安装、初始化、运行 `node-hiprint-transit`。
 
 ```bash
-wget http://192.168.50.97/root/node-hiprint-transit/-/raw/main/install.sh
+wget https://raw.githubusercontent.com/amDosion/node-hiprint-transit/main/install.sh
 
 chmod +x install.sh
 
@@ -56,32 +56,30 @@ chmod +x install.sh
 
 ### 自动镜像发布
 
-本仓库使用 GitLab CI 自动构建文明本地 GitLab Registry 镜像：
+本仓库使用 GitHub Actions 自动构建 GHCR 镜像：
 
-- 推送到 `main` / `master`：构建并推送 `latest`，同时生成分支 tag 和短 SHA tag。
+- 推送到 `main` / `master`：构建并推送 `ghcr.io/amdosion/node-hiprint-transit:latest`，同时生成分支 tag 和短 SHA tag。
 - 推送到 `codex/**`：构建并推送对应开发分支 tag，便于 Unraid 或测试环境提前验证。
-- 推送 `v*` tag：构建并推送原始 tag 和去掉 `v` 前缀的语义化版本 tag。
-- Merge Request：只构建校验，不推送镜像。
+- 推送 `v*` tag：构建并推送语义化版本 tag。
+- Pull Request：只构建校验，不推送镜像。
 
-Unraid 生产环境应使用 GitLab 发布的镜像，而不是在 Unraid 本机重新构建。`main` / `master` / `codex/**` / `v*` pipeline 会把镜像推送到 GitLab Container Registry；如果 Registry 未启用，发布 job 会失败。
+Unraid 生产环境应使用 GitHub 发布的镜像，而不是在 Unraid 本机重新构建：
 
 ```bash
-docker pull 192.168.50.97:5050/root/node-hiprint-transit:latest
+docker pull ghcr.io/amdosion/node-hiprint-transit:latest
 ```
-
-Merge Request pipeline 只构建校验镜像，不推送 Registry。
 
 ### 1. 克隆项目
 
 ```bash
-git clone git@192.168.50.97:root/node-hiprint-transit.git
+git clone https://github.com/amDosion/node-hiprint-transit.git
 cd node-hiprint-transit
 ```
 
-也可以直接使用文明 GitLab Registry 镜像：
+也可以直接使用 GHCR 镜像：
 
 ```bash
-docker pull 192.168.50.97:5050/root/node-hiprint-transit:latest
+docker pull ghcr.io/amdosion/node-hiprint-transit:latest
 ```
 
 开发和 CI 验证：
@@ -114,7 +112,7 @@ docker-compose up -d
 
 ### 1. 下载打包文件
 
-当前独立维护版本优先使用 Docker / GitLab Registry 部署；Windows 打包产物以后续 GitLab 发布为准。
+当前独立维护版本优先使用 Docker / GHCR 部署；Windows 打包产物以后续 GitHub Releases 为准。
 
 ### 2. 指定解压缩路径
 
@@ -434,14 +432,14 @@ hiwebSocket.socket.on('success', () => {
 
 ## 周边生态项目
 
-| 项目名称                 | 项目地址                                                                                                               | 下载地址                                                                      | 描述                                                               |
-| ------------------------ | ---------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------- | ------------------------------------------------------------------ |
-| vue-plugin-hiprint       | [github](https://github.com/amDosion/vue3-print)                                                                       | [npm](https://www.npmjs.com/package/vue-plugin-hiprint)                       | 打印设计器                                                         |
-| electron-hiprint         | [github](https://github.com/amDosion/electron-hiprint)                                                                 | [releases](https://github.com/amDosion/electron-hiprint/releases)             | 直接打印客户端                                                     |
-| node-hiprint-transit     | [gitlab](http://192.168.50.97/root/node-hiprint-transit)                                                               | [registry](http://192.168.50.97/root/node-hiprint-transit/container_registry) | web 与客户端中转服务 Node 实现                                     |
-| hiprint-transporter-java | [github](https://github.com/LyingDoc/hiprint-transit-java)、[gitee](https://gitee.com/dut_cc/hiprint-transporter-java) | -                                                                             | web 与客户端中转服务 Java 实现                                     |
-| hiprint-transit-java     | [github](https://github.com/weaponready/hiprint-transit-java)                                                          | -                                                                             | web 与客户端中转服务 Java 实现                                     |
-| uni-app-hiprint          | [github](https://github.com/Xavier9896/uni-app-hiprint)                                                                | -                                                                             | uni-app 项目通过 webview 使用 vue-plugin-hiprint demo              |
-| node-hiprint-pdf         | [github](https://github.com/CcSimple/node-hiprint-pdf)                                                                 | -                                                                             | 提供通过 node 对 vue-plugin-hiprint 模板生成 矢量 pdf、image、html |
+| 项目名称                 | 项目地址                                                                                                               | 下载地址                                                                                         | 描述                                                               |
+| ------------------------ | ---------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------ |
+| vue-plugin-hiprint       | [github](https://github.com/amDosion/vue3-print)                                                                       | [npm](https://www.npmjs.com/package/vue-plugin-hiprint)                                          | 打印设计器                                                         |
+| electron-hiprint         | [github](https://github.com/amDosion/electron-hiprint)                                                                 | [releases](https://github.com/amDosion/electron-hiprint/releases)                                | 直接打印客户端                                                     |
+| node-hiprint-transit     | [github](https://github.com/amDosion/node-hiprint-transit)                                                             | [packages](https://github.com/amDosion/node-hiprint-transit/pkgs/container/node-hiprint-transit) | web 与客户端中转服务 Node 实现                                     |
+| hiprint-transporter-java | [github](https://github.com/LyingDoc/hiprint-transit-java)、[gitee](https://gitee.com/dut_cc/hiprint-transporter-java) | -                                                                                                | web 与客户端中转服务 Java 实现                                     |
+| hiprint-transit-java     | [github](https://github.com/weaponready/hiprint-transit-java)                                                          | -                                                                                                | web 与客户端中转服务 Java 实现                                     |
+| uni-app-hiprint          | [github](https://github.com/Xavier9896/uni-app-hiprint)                                                                | -                                                                                                | uni-app 项目通过 webview 使用 vue-plugin-hiprint demo              |
+| node-hiprint-pdf         | [github](https://github.com/CcSimple/node-hiprint-pdf)                                                                 | -                                                                                                | 提供通过 node 对 vue-plugin-hiprint 模板生成 矢量 pdf、image、html |
 
 ![赞赏我](./res/WechatAppreciate.jpg)

@@ -44,18 +44,7 @@ describe('project metadata', () => {
   it('keeps Docker smoke wired into local and CI gates', async () => {
     const runAll = await readText('scripts/run-all.sh');
     const ci = await readText('.github/workflows/ci.yml');
-    const gitlabRoot = await readText('.gitlab-ci.yml');
-    const gitlabCi = await readText('.gitlab/workflows/ci.yml');
-    const gitlabDockerPublish = await readText(
-      '.gitlab/workflows/docker-publish.yml',
-    );
     assert.match(runAll, /npm run check:docker/);
     assert.match(ci, /npm run check:docker/);
-    assert.match(gitlabRoot, /\.gitlab\/workflows\/ci\.yml/);
-    assert.match(gitlabRoot, /\.gitlab\/workflows\/docker-publish\.yml/);
-    assert.match(gitlabCi, /npm run verify/);
-    assert.match(gitlabDockerPublish, /buildctl-daemonless\.sh build/);
-    assert.match(gitlabDockerPublish, /node-hiprint-transit\.tar/);
-    assert.match(gitlabDockerPublish, /CI_REGISTRY_IMAGE/);
   });
 });
